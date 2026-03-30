@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRONE CONTROL SYSTEM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #080c10;
+    --bg2:       #0d1520;
+    --bg3:       #111e2e;
+    --panel:     #0a1525;
+    --border:    #1a3a5c;
+    --accent:    #00c8ff;
+    --accent2:   #00ff9d;
+    --warn:      #ff9900;
+    --danger:    #ff3355;
+    --text:      #c8e0f0;
+    --text-dim:  #4a7090;
+    --glow:      0 0 12px rgba(0,200,255,0.4);
+    --glow2:     0 0 12px rgba(0,255,157,0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(0,80,160,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(0,200,100,0.06) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,100,200,0.04) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,100,200,0.04) 40px);
+  }
+
+  /* ---- HEADER ---- */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: linear-gradient(180deg, rgba(0,30,60,0.9), rgba(0,0,0,0));
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .drone-icon {
+    width: 40px; height: 40px;
+    position: relative;
+  }
+
+  .drone-icon svg { filter: drop-shadow(var(--glow)); }
+
+  .logo-text {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-shadow: var(--glow);
+  }
+
+  .logo-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    margin-top: 2px;
+  }
+
+  .status-bar {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .status-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .status-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .status-value.ok    { color: var(--accent2); text-shadow: var(--glow2); }
+  .status-value.warn  { color: var(--warn); }
+  .status-value.error { color: var(--danger); }
+
+  .connection-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent2);
+    box-shadow: 0 0 8px var(--accent2);
+    animation: pulse 1.5s infinite;
+  }
+
+  .connection-dot.disconnected {
+    background: var(--danger);
+    box-shadow: 0 0 8px var(--danger);
+    animation: none;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+
+  .ip-input {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 3px;
+    width: 160px;
+    outline: none;
+  }
+
+  .ip-input:focus { border-color: var(--accent); box-shadow: var(--glow); }
+
+  .btn {
+    background: rgba(0,200,255,0.1);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    padding: 5px 12px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .btn:hover {
+    background: rgba(0,200,255,0.25);
+    box-shadow: var(--glow);
+  }
+
+  /* ---- MAIN GRID ---- */
+  .main {
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 14px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* ---- PANEL ---- */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.6;
+  }
+
+  .panel.green::before { background: linear-gradient(90deg, transparent, var(--accent2), transparent); }
+  .panel.orange::before { background: linear-gradient(90deg, transparent, var(--warn), transparent); }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(26,58,92,0.6);
+    background: rgba(0,0,0,0.3);
+  }
+
+  .panel-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+  }
+
+  .panel.green .panel-title  { color: var(--accent2); }
+  .panel.orange .panel-title { color: var(--warn); }
+
+  .panel-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .panel-body { padding: 14px; }
+
+  /* ---- SENSOR ROW ---- */
+  .sensor-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+
+  .sensor-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    width: 28px;
+    flex-shrink: 0;
+  }
+
+  .sensor-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .sensor-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.15s ease;
+  }
+
+  .bar-accel { background: linear-gradient(90deg, #0050a0, var(--accent)); }
+  .bar-gyro  { background: linear-gradient(90deg, #500080, #cc44ff); }
+  .bar-mag   { background: linear-gradient(90deg, #805000, var(--warn)); }
+
+  .sensor-val {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text);
+    width: 70px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .sensor-unit {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    width: 30px;
+    flex-shrink: 0;
+  }
+
+  /* ---- BIG VALUES ---- */
+  .big-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .big-val-card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(26,58,92,0.5);
+    border-radius: 3px;
+    padding: 10px 12px;
+    position: relative;
+  }
+
+  .big-val-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .big-val-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.1;
+    margin-top: 3px;
+  }
+
+  .big-val-unit {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+
+  .big-val-card.green .big-val-num  { color: var(--accent2); text-shadow: var(--glow2); }
+  .big-val-card.orange .big-val-num { color: var(--warn); }
+
+  /* ---- COMPASS ---- */
+  .compass-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .compass-outer {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: radial-gradient(circle, rgba(0,30,60,0.8), rgba(0,0,0,0.95));
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.5);
+  }
+
+  .compass-outer::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,200,255,0.15);
+  }
+
+  .compass-marks {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+  }
+
+  .compass-label {
+    position: absolute;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .label-n { top: 8px;  left: 50%; transform: translateX(-50%); color: var(--danger); }
+  .label-s { bottom: 8px; left: 50%; transform: translateX(-50%); }
+  .label-e { right: 10px; top: 50%; transform: translateY(-50%); }
+  .label-w { left: 10px; top: 50%; transform: translateY(-50%); }
+
+  .compass-needle {
+    position: absolute;
+    width: 4px;
+    height: 55px;
+    transform-origin: bottom center;
+    bottom: 50%;
+    left: calc(50% - 2px);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .needle-north {
+    background: linear-gradient(180deg, var(--danger), rgba(255,50,80,0.3));
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    border-radius: 2px 2px 0 0;
+  }
+
+  .compass-needle.south {
+    background: linear-gradient(0deg, var(--text-dim), rgba(100,150,180,0.3));
+    clip-path: polygon(50% 100%, 100% 0%, 0% 0%);
+    border-radius: 0 0 2px 2px;
+    top: 50%;
+    bottom: auto;
+    transform-origin: top center;
+    height: 45px;
+  }
+
+  .compass-center {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: var(--glow);
+    z-index: 10;
+    position: relative;
+  }
+
+  .heading-display {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--warn);
+    text-shadow: 0 0 15px rgba(255,153,0,0.5);
+    letter-spacing: 0.05em;
+  }
+
+  .heading-dir {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+  }
+
+  /* ---- ATTITUDE INDICATOR ---- */
+  .attitude-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .attitude-outer {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    background: #0a0a14;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+  }
+
+  .attitude-horizon {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    left: -70px;
+    transition: transform 0.15s ease;
+  }
+
+  .horizon-sky {
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(180deg, #003060, #0060a0);
+  }
+
+  .horizon-ground {
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(0deg, #3d1a00, #7a3a00);
+  }
+
+  .horizon-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: rgba(255,255,255,0.5);
+    top: 50%;
+    margin-top: -1px;
+  }
+
+  .attitude-cross {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+  }
+
+  .attitude-cross-h {
+    width: 60px; height: 2px;
+    background: var(--warn);
+    position: absolute;
+    top: 0; left: -30px;
+  }
+
+  .attitude-cross-v {
+    width: 2px; height: 14px;
+    background: var(--warn);
+    position: absolute;
+    top: -7px; left: -1px;
+  }
+
+  .attitude-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--warn);
+    position: absolute;
+    top: -3px; left: -3px;
+  }
+
+  .attitude-angles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .angle-card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(26,58,92,0.5);
+    border-radius: 3px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+
+  .angle-name {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--text-dim);
+  }
+
+  .angle-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+
+  /* ---- BARO ---- */
+  .baro-visual {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .alt-bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .alt-bar-outer {
+    width: 20px;
+    height: 100px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .alt-bar-fill {
+    width: 100%;
+    background: linear-gradient(0deg, var(--accent2), var(--accent));
+    transition: height 0.5s ease;
+    box-shadow: 0 0 8px rgba(0,200,255,0.4);
+  }
+
+  .alt-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+  }
+
+  /* ---- GPS MAP ---- */
+  .gps-panel { grid-column: 1 / -1; }
+
+  .gps-body {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 14px;
+  }
+
+  .map-container {
+    background: #0a1520;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    height: 260px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #map { width: 100%; height: 100%; }
+
+  .map-overlay {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: rgba(0,0,0,0.8);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    border-radius: 2px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    z-index: 100;
+  }
+
+  .map-no-fix {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.85);
+    z-index: 50;
+  }
+
+  .no-fix-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 8px rgba(255,153,0,0.5));
+  }
+
+  .no-fix-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    color: var(--warn);
+    letter-spacing: 0.15em;
+  }
+
+  .no-fix-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .gps-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    align-content: start;
+  }
+
+  .gps-stat-card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(26,58,92,0.5);
+    border-radius: 3px;
+    padding: 10px;
+  }
+
+  .gps-stat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .gps-stat-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-top: 2px;
+  }
+
+  .coord-display {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent2);
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  .sat-dots {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .sat-dot {
+    width: 8px; height: 8px;
+    border-radius: 1px;
+    background: var(--border);
+  }
+
+  .sat-dot.active {
+    background: var(--accent2);
+    box-shadow: 0 0 4px var(--accent2);
+  }
+
+  /* ---- BOTTOM ROW ---- */
+  .charts-panel { grid-column: span 2; }
+
+  .mini-charts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .mini-chart-wrap {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(26,58,92,0.5);
+    border-radius: 3px;
+    padding: 8px;
+  }
+
+  .mini-chart-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+
+  canvas.mini-chart {
+    width: 100%;
+    height: 60px;
+    display: block;
+  }
+
+  /* ---- BOTTOM STATUS ---- */
+  .bottom-bar {
+    padding: 8px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.5);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+  }
+
+  .tick-counter { color: var(--accent); }
+
+  /* ---- SCROLLBAR ---- */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 1100px) {
+    .main { grid-template-columns: 1fr 1fr; }
+    .gps-panel { grid-column: 1 / -1; }
+    .charts-panel { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 700px) {
+    .main { grid-template-columns: 1fr; }
+    .gps-body { grid-template-columns: 1fr; }
+  }
+
+  /* scan-line overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.04) 2px,
+      rgba(0,0,0,0.04) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">
+    <div class="drone-icon">
+      <svg viewBox="0 0 40 40" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="5" fill="#00c8ff" opacity="0.9"/>
+        <line x1="20" y1="15" x2="20" y2="4" stroke="#00c8ff" stroke-width="1.5"/>
+        <line x1="20" y1="25" x2="20" y2="36" stroke="#00c8ff" stroke-width="1.5"/>
+        <line x1="15" y1="20" x2="4"  y2="20" stroke="#00c8ff" stroke-width="1.5"/>
+        <line x1="25" y1="20" x2="36" y2="20" stroke="#00c8ff" stroke-width="1.5"/>
+        <circle cx="20" cy="4"  r="4" fill="none" stroke="#00c8ff" stroke-width="1.5" opacity="0.7"/>
+        <circle cx="20" cy="36" r="4" fill="none" stroke="#00c8ff" stroke-width="1.5" opacity="0.7"/>
+        <circle cx="4"  cy="20" r="4" fill="none" stroke="#00c8ff" stroke-width="1.5" opacity="0.7"/>
+        <circle cx="36" cy="20" r="4" fill="none" stroke="#00c8ff" stroke-width="1.5" opacity="0.7"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">DRONE CONTROL</div>
+      <div class="logo-sub">ESP32·GY-91·NEO-6M&nbsp;&nbsp;v1.0</div>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <span class="status-label">SENSOR</span>
+      <span class="status-value ok" id="hdr-sensor">GY-91</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">BARO ALT</span>
+      <span class="status-value ok" id="hdr-alt">0.0m</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">GPS</span>
+      <span class="status-value warn" id="hdr-gps">NO FIX</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <input class="ip-input" id="mqtt-broker" type="text"
+        value="1f7044f111924e29b57e6b213a7a8379.s1.eu.hivemq.cloud"
+        placeholder="HiveMQ broker" style="width:280px">
+      <input class="ip-input" id="mqtt-user" type="text" value="esp32_drone" placeholder="Usuário" style="width:100px">
+      <input class="ip-input" id="mqtt-pass" type="password" value="Drone2024!" placeholder="Senha" style="width:100px">
+      <button class="btn" onclick="mqttConnect()">CONECTAR</button>
+      <button class="btn" onclick="calibrateAlt()">CAL ALT</button>
+    </div>
+    <div class="status-item">
+      <span class="status-label">LINK</span>
+      <div class="connection-dot disconnected" id="conn-dot"></div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ====== ACELERÔMETRO ====== -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">ACELERÔMETRO</span>
+      <span class="panel-tag">GY-91 · MPU9250</span>
+    </div>
+    <div class="panel-body">
+      <div class="sensor-row">
+        <span class="sensor-label">X</span>
+        <div class="sensor-bar-wrap"><div class="sensor-bar bar-accel" id="bar-ax" style="width:50%"></div></div>
+        <span class="sensor-val" id="val-ax">0.000</span>
+        <span class="sensor-unit">g</span>
+      </div>
+      <div class="sensor-row">
+        <span class="sensor-label">Y</span>
+        <div class="sensor-bar-wrap"><div class="sensor-bar bar-accel" id="bar-ay" style="width:50%"></div></div>
+        <span class="sensor-val" id="val-ay">0.000</span>
+        <span class="sensor-unit">g</span>
+      </div>
+      <div class="sensor-row">
+        <span class="sensor-label">Z</span>
+        <div class="sensor-bar-wrap"><div class="sensor-bar bar-accel" id="bar-az" style="width:75%"></div></div>
+        <span class="sensor-val" id="val-az">1.000</span>
+        <span class="sensor-unit">g</span>
+      </div>
+
+      <div class="big-grid" style="margin-top:10px">
+        <div class="big-val-card green">
+          <div class="big-val-label">PITCH</div>
+          <div class="big-val-num" id="val-pitch">0.0</div>
+          <div class="big-val-unit">graus °</div>
+        </div>
+        <div class="big-val-card green">
+          <div class="big-val-label">ROLL</div>
+          <div class="big-val-num" id="val-roll">0.0</div>
+          <div class="big-val-unit">graus °</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== GIROSCÓPIO ====== -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">GIROSCÓPIO</span>
+      <span class="panel-tag">GY-91 · MPU9250</span>
+    </div>
+    <div class="panel-body">
+      <div class="sensor-row">
+        <span class="sensor-label">X</span>
+        <div class="sensor-bar-wrap"><div class="sensor-bar bar-gyro" id="bar-gx" style="width:50%"></div></div>
+        <span class="sensor-val" id="val-gx">0.0</span>
+        <span class="sensor-unit">°/s</span>
+      </div>
+      <div class="sensor-row">
+        <span class="sensor-label">Y</span>
+        <div class="sensor-bar-wrap"><div class="sensor-bar bar-gyro" id="bar-gy" style="width:50%"></div></div>
+        <span class="sensor-val" id="val-gy">0.0</span>
+        <span class="sensor-unit">°/s</span>
+      </div>
+      <div class="sensor-row">
+        <span class="sensor-label">Z</span>
+        <div class="sensor-bar-wrap"><div class="sensor-bar bar-gyro" id="bar-gz" style="width:50%"></div></div>
+        <span class="sensor-val" id="val-gz">0.0</span>
+        <span class="sensor-unit">°/s</span>
+      </div>
+
+      <div class="attitude-wrap" style="margin-top:14px">
+        <div class="attitude-outer">
+          <div class="attitude-horizon" id="horizon">
+            <div class="horizon-sky"></div>
+            <div class="horizon-ground"></div>
+            <div class="horizon-line"></div>
+          </div>
+          <div class="attitude-cross">
+            <div class="attitude-cross-h"></div>
+            <div class="attitude-cross-v"></div>
+            <div class="attitude-dot"></div>
+          </div>
+        </div>
+        <div class="attitude-angles">
+          <div class="angle-card">
+            <div class="angle-name">PITCH</div>
+            <div class="angle-num" id="att-pitch">0.0°</div>
+          </div>
+          <div class="angle-card">
+            <div class="angle-name">ROLL</div>
+            <div class="angle-num" id="att-roll">0.0°</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== MAGNETÓMETRO + BÚSSOLA ====== -->
+  <div class="panel orange">
+    <div class="panel-header">
+      <span class="panel-title">MAGNETÓMETRO · BÚSSOLA</span>
+      <span class="panel-tag">GY-91 · AK8963</span>
+    </div>
+    <div class="panel-body">
+      <div class="sensor-row">
+        <span class="sensor-label">X</span>
+        <div class="sensor-bar-wrap"><div class="sensor-bar bar-mag" id="bar-mx" style="width:50%"></div></div>
+        <span class="sensor-val" id="val-mx">0.0</span>
+        <span class="sensor-unit">µT</span>
+      </div>
+      <div class="sensor-row">
+        <span class="sensor-label">Y</span>
+        <div class="sensor-bar-wrap"><div class="sensor-bar bar-mag" id="bar-my" style="width:50%"></div></div>
+        <span class="sensor-val" id="val-my">0.0</span>
+        <span class="sensor-unit">µT</span>
+      </div>
+      <div class="sensor-row">
+        <span class="sensor-label">Z</span>
+        <div class="sensor-bar-wrap"><div class="sensor-bar bar-mag" id="bar-mz" style="width:50%"></div></div>
+        <span class="sensor-val" id="val-mz">0.0</span>
+        <span class="sensor-unit">µT</span>
+      </div>
+
+      <div class="compass-wrap" style="margin-top:10px">
+        <div class="compass-outer">
+          <span class="compass-label label-n">N</span>
+          <span class="compass-label label-s">S</span>
+          <span class="compass-label label-e">E</span>
+          <span class="compass-label label-w">W</span>
+          <div class="compass-needle needle-north" id="compass-needle"></div>
+          <div class="compass-center"></div>
+        </div>
+        <div style="text-align:center">
+          <div class="heading-display" id="compass-heading">000°</div>
+          <div class="heading-dir" id="compass-dir">NORTE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== BARÔMETRO ====== -->
+  <div class="panel green">
+    <div class="panel-header">
+      <span class="panel-title">BARÓMETRO · ALTITUDE</span>
+      <span class="panel-tag">GY-91 · BMP280</span>
+    </div>
+    <div class="panel-body">
+      <div style="display:flex;gap:16px;align-items:flex-start">
+        <div class="alt-bar-container">
+          <div class="alt-bar-outer">
+            <div class="alt-bar-fill" id="alt-bar-fill" style="height:5%"></div>
+          </div>
+          <div class="alt-label">ALT</div>
+        </div>
+        <div style="flex:1">
+          <div class="big-grid">
+            <div class="big-val-card green" style="grid-column:1/-1">
+              <div class="big-val-label">ALTITUDE RELATIVA</div>
+              <div class="big-val-num" id="val-alt">0.00</div>
+              <div class="big-val-unit">metros</div>
+            </div>
+            <div class="big-val-card">
+              <div class="big-val-label">PRESSÃO</div>
+              <div class="big-val-num" style="font-size:1.1rem" id="val-press">1013.2</div>
+              <div class="big-val-unit">hPa</div>
+            </div>
+            <div class="big-val-card">
+              <div class="big-val-label">TEMP</div>
+              <div class="big-val-num" style="font-size:1.1rem" id="val-temp">25.0</div>
+              <div class="big-val-unit">°C</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini chart altitude -->
+      <div style="margin-top:10px">
+        <div class="mini-chart-title">HISTÓRICO ALTITUDE (últimos 60s)</div>
+        <canvas id="alt-chart" height="55" style="width:100%;display:block;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== GRÁFICOS MINI ====== -->
+  <div class="panel charts-panel" style="grid-column: span 2">
+    <div class="panel-header">
+      <span class="panel-title">HISTÓRICO · GIROSCÓPIO & ACELERÔMETRO</span>
+      <span class="panel-tag">ÚLTIMOS 60 PONTOS</span>
+    </div>
+    <div class="panel-body">
+      <div class="mini-charts">
+        <div class="mini-chart-wrap">
+          <div class="mini-chart-title">ACCEL X · Y · Z (g)</div>
+          <canvas id="chart-accel" class="mini-chart" height="60"></canvas>
+        </div>
+        <div class="mini-chart-wrap">
+          <div class="mini-chart-title">GYRO X · Y · Z (°/s)</div>
+          <canvas id="chart-gyro" class="mini-chart" height="60"></canvas>
+        </div>
+        <div class="mini-chart-wrap">
+          <div class="mini-chart-title">PITCH · ROLL (°)</div>
+          <canvas id="chart-angles" class="mini-chart" height="60"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== GPS ====== -->
+  <div class="panel gps-panel">
+    <div class="panel-header">
+      <span class="panel-title">GPS · NEO-6M</span>
+      <span class="panel-tag">GNSS POSIÇÃO & VELOCIDADE</span>
+    </div>
+    <div class="panel-body">
+      <div class="gps-body">
+        <div class="map-container">
+          <div class="map-overlay" id="map-zoom-info">GPS aguardando fix...</div>
+          <div id="map"></div>
+          <div class="map-no-fix" id="no-fix-overlay">
+            <div class="no-fix-icon">🛰️</div>
+            <div class="no-fix-text">AGUARDANDO GPS FIX</div>
+            <div class="no-fix-sub" id="sat-count-text">Satélites: 0</div>
+          </div>
+        </div>
+
+        <div class="gps-stats">
+          <div class="gps-stat-card" style="grid-column:1/-1">
+            <div class="gps-stat-label">LATITUDE</div>
+            <div class="coord-display" id="gps-lat">---.--------</div>
+            <div class="gps-stat-label" style="margin-top:6px">LONGITUDE</div>
+            <div class="coord-display" id="gps-lng">---.--------</div>
+          </div>
+          <div class="gps-stat-card">
+            <div class="gps-stat-label">VELOCIDADE</div>
+            <div class="gps-stat-val" id="gps-speed">0.0</div>
+            <div class="gps-stat-label">km/h</div>
+          </div>
+          <div class="gps-stat-card">
+            <div class="gps-stat-label">ALTITUDE GPS</div>
+            <div class="gps-stat-val" id="gps-alt-val">0.0</div>
+            <div class="gps-stat-label">metros</div>
+          </div>
+          <div class="gps-stat-card">
+            <div class="gps-stat-label">CURSO</div>
+            <div class="gps-stat-val" id="gps-course">0.0°</div>
+          </div>
+          <div class="gps-stat-card">
+            <div class="gps-stat-label">SATÉLITES</div>
+            <div class="gps-stat-val" id="gps-sats">0</div>
+            <div class="sat-dots" id="sat-dots"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<div class="bottom-bar">
+  <span>DRONE CONTROL SYSTEM &nbsp;·&nbsp; ESP32 XIAO S3 &nbsp;·&nbsp; GY-91 + NEO-6M</span>
+  <span>FREQ: <span id="freq-display">--</span> Hz &nbsp;|&nbsp; UPTIME: <span id="uptime">00:00:00</span> &nbsp;|&nbsp; TICKS: <span class="tick-counter" id="tick-count">0</span></span>
+</div>
+
+<!-- Leaflet for GPS map -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/5.10.1/mqtt.min.js"></script>
+
+<script>
+// ========================================
+// ESTADO GLOBAL
+// ========================================
+let mqttClient = null;
+let connected = false;
+let tickCount = 0;
+let lastTickTime = Date.now();
+let fetchHz = 0;
+let startTime = Date.now();
+
+// Histórico para gráficos
+const MAX_HIST = 60;
+const hist = {
+  ax:[], ay:[], az:[],
+  gx:[], gy:[], gz:[],
+  pitch:[], roll:[], alt:[]
+};
+
+// ========================================
+// MAP
+// ========================================
+let map = null;
+let mapMarker = null;
+let mapTrack = [];
+let mapPolyline = null;
+let mapInitialized = false;
+
+function initMap() {
+  if (mapInitialized) return;
+  mapInitialized = true;
+  map = L.map('map', { zoomControl: true, attributionControl: false });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19
+  }).addTo(map);
+  map.setView([0, 0], 2);
+
+  const icon = L.divIcon({
+    html: `<div style="
+      width:18px;height:18px;
+      background:radial-gradient(circle,#00c8ff,#0060a0);
+      border:2px solid #00c8ff;
+      border-radius:50%;
+      box-shadow:0 0 10px #00c8ff;
+    "></div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
+    className: ''
+  });
+  mapMarker = L.marker([0, 0], { icon }).addTo(map);
+  mapPolyline = L.polyline([], { color: '#00c8ff', weight: 2, opacity: 0.7 }).addTo(map);
+}
+
+function updateMap(lat, lng) {
+  if (!mapInitialized) initMap();
+  mapMarker.setLatLng([lat, lng]);
+  mapTrack.push([lat, lng]);
+  if (mapTrack.length > 200) mapTrack.shift();
+  mapPolyline.setLatLngs(mapTrack);
+  map.setView([lat, lng], map.getZoom() < 14 ? 15 : map.getZoom());
+  document.getElementById('map-zoom-info').textContent =
+    `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+}
+
+// ========================================
+// MINI CHARTS (canvas)
+// ========================================
+function drawLineChart(canvasId, datasets, colors, minVal, maxVal) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.offsetWidth;
+  const h = canvas.offsetHeight || 60;
+  canvas.width = w;
+  canvas.height = h;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(26,58,92,0.4)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 3; i++) {
+    const y = (i / 3) * h;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+  }
+
+  // Zero line
+  const range = maxVal - minVal;
+  const zeroY = h - ((0 - minVal) / range) * h;
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.beginPath();
+  ctx.moveTo(0, zeroY);
+  ctx.lineTo(w, zeroY);
+  ctx.stroke();
+
+  datasets.forEach((data, di) => {
+    if (data.length < 2) return;
+    ctx.strokeStyle = colors[di];
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    data.forEach((v, i) => {
+      const x = (i / (MAX_HIST - 1)) * w;
+      const y = h - ((v - minVal) / range) * h;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  });
+}
+
+function redrawCharts() {
+  drawLineChart('chart-accel', [hist.ax, hist.ay, hist.az],
+    ['#00c8ff', '#00ff9d', '#ff9900'], -2, 2);
+  drawLineChart('chart-gyro', [hist.gx, hist.gy, hist.gz],
+    ['#cc44ff', '#ff44aa', '#4444ff'], -200, 200);
+  drawLineChart('chart-angles', [hist.pitch, hist.roll],
+    ['#00ff9d', '#ff9900'], -90, 90);
+  // alt chart
+  const altCanvas = document.getElementById('alt-chart');
+  if (altCanvas) {
+    const maxA = Math.max(10, ...hist.alt) * 1.2;
+    drawLineChart('alt-chart', [hist.alt], ['#00ff9d'], 0, maxA);
+  }
+}
+
+function pushHist(key, val) {
+  hist[key].push(val);
+  if (hist[key].length > MAX_HIST) hist[key].shift();
+}
+
+// ========================================
+// BAR HELPERS
+// ========================================
+function setBar(id, val, min, max) {
+  const pct = Math.min(100, Math.max(0, ((val - min) / (max - min)) * 100));
+  const el = document.getElementById(id);
+  if (el) el.style.width = pct + '%';
+}
+
+// ========================================
+// COMPASS
+// ========================================
+function setCompass(heading) {
+  const needle = document.getElementById('compass-needle');
+  if (needle) needle.style.transform = `rotate(${heading}deg)`;
+  const south = needle ? needle.nextElementSibling : null;
+  document.getElementById('compass-heading').textContent =
+    String(Math.round(heading)).padStart(3,'0') + '°';
+
+  const dirs = ['NORTE','NNE','NE','ENE','ESTE','ESE','SE','SSE',
+                 'SUL','SSW','SW','WSW','OESTE','WNW','NW','NNW'];
+  const idx = Math.round(heading / 22.5) % 16;
+  document.getElementById('compass-dir').textContent = dirs[idx];
+}
+
+// ========================================
+// ATTITUDE INDICATOR
+// ========================================
+function setAttitude(pitch, roll) {
+  const horizon = document.getElementById('horizon');
+  if (!horizon) return;
+  // translate Y for pitch, rotate for roll
+  const translateY = pitch * 1.2;
+  horizon.style.transform = `translateY(${translateY}px) rotate(${-roll}deg)`;
+  document.getElementById('att-pitch').textContent = pitch.toFixed(1) + '°';
+  document.getElementById('att-roll').textContent = roll.toFixed(1) + '°';
+}
+
+// ========================================
+// SAT DOTS
+// ========================================
+function updateSatDots(count) {
+  const wrap = document.getElementById('sat-dots');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  for (let i = 0; i < 12; i++) {
+    const d = document.createElement('div');
+    d.className = 'sat-dot' + (i < count ? ' active' : '');
+    wrap.appendChild(d);
+  }
+}
+
+// ========================================
+// UPDATE UI
+// ========================================
+function updateUI(d) {
+  // ACCEL
+  setText('val-ax', d.accel.x.toFixed(3));
+  setText('val-ay', d.accel.y.toFixed(3));
+  setText('val-az', d.accel.z.toFixed(3));
+  setBar('bar-ax', d.accel.x, -2, 2);
+  setBar('bar-ay', d.accel.y, -2, 2);
+  setBar('bar-az', d.accel.z, -2, 2);
+  setText('val-pitch', d.accel.pitch.toFixed(1));
+  setText('val-roll',  d.accel.roll.toFixed(1));
+
+  // GYRO
+  setText('val-gx', d.gyro.x.toFixed(1));
+  setText('val-gy', d.gyro.y.toFixed(1));
+  setText('val-gz', d.gyro.z.toFixed(1));
+  setBar('bar-gx', d.gyro.x, -250, 250);
+  setBar('bar-gy', d.gyro.y, -250, 250);
+  setBar('bar-gz', d.gyro.z, -250, 250);
+
+  // ATTITUDE
+  setAttitude(d.accel.pitch, d.accel.roll);
+
+  // MAG
+  setText('val-mx', d.mag.x.toFixed(1));
+  setText('val-my', d.mag.y.toFixed(1));
+  setText('val-mz', d.mag.z.toFixed(1));
+  setBar('bar-mx', d.mag.x, -100, 100);
+  setBar('bar-my', d.mag.y, -100, 100);
+  setBar('bar-mz', d.mag.z, -100, 100);
+  setCompass(d.mag.heading);
+
+  // BARO
+  setText('val-alt',   d.baro.altitude.toFixed(2));
+  setText('val-press', (d.baro.pressure / 100).toFixed(1)); // Pa to hPa
+  setText('val-temp',  d.baro.temperature.toFixed(1));
+  setText('hdr-alt',   d.baro.altitude.toFixed(1) + 'm');
+
+  // Alt bar (max 50m)
+  const altPct = Math.min(100, Math.max(0, (d.baro.altitude / 50) * 100));
+  const altBar = document.getElementById('alt-bar-fill');
+  if (altBar) altBar.style.height = altPct + '%';
+
+  // GPS
+  if (d.gps.valid) {
+    setText('gps-lat', d.gps.lat.toFixed(7) + '°');
+    setText('gps-lng', d.gps.lng.toFixed(7) + '°');
+    document.getElementById('no-fix-overlay').style.display = 'none';
+    document.getElementById('hdr-gps').textContent = 'FIX';
+    document.getElementById('hdr-gps').className = 'status-value ok';
+    updateMap(d.gps.lat, d.gps.lng);
+  } else {
+    document.getElementById('no-fix-overlay').style.display = 'flex';
+    document.getElementById('hdr-gps').textContent = 'NO FIX';
+    document.getElementById('hdr-gps').className = 'status-value warn';
+  }
+  setText('gps-speed',  d.gps.speed.toFixed(1));
+  setText('gps-alt-val',d.gps.altitude.toFixed(1));
+  setText('gps-course', d.gps.course.toFixed(1) + '°');
+  setText('gps-sats',   d.gps.satellites);
+  setText('sat-count-text', 'Satélites: ' + d.gps.satellites);
+  updateSatDots(d.gps.satellites);
+
+  // History
+  pushHist('ax', d.accel.x);
+  pushHist('ay', d.accel.y);
+  pushHist('az', d.accel.z);
+  pushHist('gx', d.gyro.x);
+  pushHist('gy', d.gyro.y);
+  pushHist('gz', d.gyro.z);
+  pushHist('pitch', d.accel.pitch);
+  pushHist('roll', d.accel.roll);
+  pushHist('alt', d.baro.altitude);
+
+  redrawCharts();
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+// ========================================
+// DEMO / SIMULATION
+// ========================================
+let demoTime = 0;
+function genDemoData() {
+  demoTime += 0.05;
+  const t = demoTime;
+  return {
+    accel: {
+      x: Math.sin(t * 0.7) * 0.3,
+      y: Math.cos(t * 0.5) * 0.2,
+      z: 0.98 + Math.sin(t * 2) * 0.02,
+      pitch: Math.sin(t * 0.7) * 15,
+      roll:  Math.cos(t * 0.5) * 10
+    },
+    gyro: {
+      x: Math.cos(t * 3) * 20,
+      y: Math.sin(t * 2.5) * 15,
+      z: Math.cos(t * 1.5) * 5
+    },
+    mag: {
+      x: Math.cos(t * 0.1) * 40,
+      y: Math.sin(t * 0.1) * 40,
+      z: -20,
+      heading: (t * 5) % 360
+    },
+    baro: {
+      pressure: (101325 + Math.sin(t * 0.2) * 50),
+      temperature: 25 + Math.sin(t * 0.3) * 2,
+      altitude: Math.max(0, Math.sin(t * 0.15) * 8 + 5)
+    },
+    gps: {
+      valid: false,
+      lat: 0, lng: 0,
+      speed: 0, course: 0, altitude: 0, satellites: 3
+    },
+    timestamp: Date.now()
+  };
+}
+
+// ========================================
+// MQTT CONNECTION
+// ========================================
+let demoInterval = null;
+
+function mqttConnect() {
+  const broker = document.getElementById('mqtt-broker').value.trim();
+  const user   = document.getElementById('mqtt-user').value.trim();
+  const pass   = document.getElementById('mqtt-pass').value.trim();
+  const dot    = document.getElementById('conn-dot');
+
+  if (mqttClient) {
+    try { mqttClient.end(true); } catch(e) {}
+    mqttClient = null;
+  }
+
+  // Stop demo when trying to connect
+  if (demoInterval) { clearInterval(demoInterval); demoInterval = null; }
+
+  dot.classList.add('disconnected');
+  const url = `wss://${broker}:8884/mqtt`;
+
+  mqttClient = mqtt.connect(url, {
+    username: user,
+    password: pass,
+    clientId: 'dashboard_' + Math.random().toString(16).slice(2, 8),
+    clean: true,
+    reconnectPeriod: 5000,
+    connectTimeout: 10000
+  });
+
+  mqttClient.on('connect', () => {
+    connected = true;
+    dot.classList.remove('disconnected');
+    mqttClient.subscribe('drone/telemetry', { qos: 0 });
+    mqttClient.subscribe('drone/status',    { qos: 0 });
+    mqttClient.subscribe('drone/response',  { qos: 0 });
+    console.log('MQTT conectado ao HiveMQ!');
+  });
+
+  mqttClient.on('message', (topic, payload) => {
+    try {
+      const d = JSON.parse(payload.toString());
+      if (topic === 'drone/telemetry') {
+        updateUI(d);
+        tickCount++;
+        const now = Date.now();
+        const hz = Math.round(1000 / Math.max(1, now - lastTickTime));
+        lastTickTime = now;
+        setText('tick-count', tickCount);
+        setText('freq-display', hz);
+      } else if (topic === 'drone/response') {
+        if (d.command === 'calibrate_alt' && d.status === 'ok') {
+          alert('Altitude calibrada! Pressão base: ' + (d.base_pressure/100).toFixed(2) + ' hPa');
+        }
+      }
+    } catch(e) { console.warn('Erro ao parsear MQTT:', e); }
+  });
+
+  mqttClient.on('error', (err) => {
+    console.error('MQTT erro:', err.message);
+    connected = false;
+    dot.classList.add('disconnected');
+  });
+
+  mqttClient.on('close', () => {
+    connected = false;
+    dot.classList.add('disconnected');
+  });
+}
+
+function calibrateAlt() {
+  if (!mqttClient || !mqttClient.connected) {
+    alert('MQTT não conectado. Ligue primeiro ao HiveMQ.');
+    return;
+  }
+  const cmd = JSON.stringify({ command: 'calibrate_alt' });
+  mqttClient.publish('drone/command', cmd, { qos: 1 });
+}
+
+// Demo automático até conectar
+function startDemo() {
+  demoInterval = setInterval(() => {
+    if (connected) { clearInterval(demoInterval); demoInterval = null; return; }
+    const data = genDemoData();
+    updateUI(data);
+    tickCount++;
+    setText('tick-count', tickCount);
+    setText('freq-display', 20);
+  }, 50);
+}
+
+// Uptime
+setInterval(() => {
+  const s = Math.floor((Date.now() - startTime) / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  setText('uptime',
+    String(h).padStart(2,'0') + ':' +
+    String(m).padStart(2,'0') + ':' +
+    String(sec).padStart(2,'0')
+  );
+}, 1000);
+
+// ========================================
+// INIT
+// ========================================
+window.addEventListener('load', () => {
+  initMap();
+  startDemo();
+});
+</script>
+</body>
+</html>
