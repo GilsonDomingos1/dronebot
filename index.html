@@ -22,9 +22,9 @@
     --glow:      0 0 12px rgba(0,200,255,0.4);
     --glow2:     0 0 12px rgba(0,255,157,0.4);
   }
-
+ 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
+ 
   body {
     background: var(--bg);
     color: var(--text);
@@ -37,7 +37,7 @@
       repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,100,200,0.04) 40px),
       repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,100,200,0.04) 40px);
   }
-
+ 
   /* ---- HEADER ---- */
   .header {
     display: flex;
@@ -51,20 +51,20 @@
     z-index: 100;
     backdrop-filter: blur(10px);
   }
-
+ 
   .logo {
     display: flex;
     align-items: center;
     gap: 12px;
   }
-
+ 
   .drone-icon {
     width: 40px; height: 40px;
     position: relative;
   }
-
+ 
   .drone-icon svg { filter: drop-shadow(var(--glow)); }
-
+ 
   .logo-text {
     font-family: 'Orbitron', monospace;
     font-weight: 900;
@@ -73,7 +73,7 @@
     color: var(--accent);
     text-shadow: var(--glow);
   }
-
+ 
   .logo-sub {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.65rem;
@@ -81,37 +81,37 @@
     letter-spacing: 0.2em;
     margin-top: 2px;
   }
-
+ 
   .status-bar {
     display: flex;
     gap: 20px;
     align-items: center;
   }
-
+ 
   .status-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2px;
   }
-
+ 
   .status-label {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.6rem;
     color: var(--text-dim);
     letter-spacing: 0.1em;
   }
-
+ 
   .status-value {
     font-family: 'Orbitron', monospace;
     font-size: 0.8rem;
     font-weight: 700;
   }
-
+ 
   .status-value.ok    { color: var(--accent2); text-shadow: var(--glow2); }
   .status-value.warn  { color: var(--warn); }
   .status-value.error { color: var(--danger); }
-
+ 
   .connection-dot {
     width: 8px; height: 8px;
     border-radius: 50%;
@@ -119,18 +119,18 @@
     box-shadow: 0 0 8px var(--accent2);
     animation: pulse 1.5s infinite;
   }
-
+ 
   .connection-dot.disconnected {
     background: var(--danger);
     box-shadow: 0 0 8px var(--danger);
     animation: none;
   }
-
+ 
   @keyframes pulse {
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.4; }
   }
-
+ 
   .ip-input {
     background: var(--bg3);
     border: 1px solid var(--border);
@@ -142,9 +142,9 @@
     width: 160px;
     outline: none;
   }
-
+ 
   .ip-input:focus { border-color: var(--accent); box-shadow: var(--glow); }
-
+ 
   .btn {
     background: rgba(0,200,255,0.1);
     border: 1px solid var(--accent);
@@ -157,12 +157,12 @@
     border-radius: 2px;
     transition: all 0.2s;
   }
-
+ 
   .btn:hover {
     background: rgba(0,200,255,0.25);
     box-shadow: var(--glow);
   }
-
+ 
   /* ---- MAIN GRID ---- */
   .main {
     padding: 16px 20px;
@@ -173,7 +173,7 @@
     max-width: 1600px;
     margin: 0 auto;
   }
-
+ 
   /* ---- PANEL ---- */
   .panel {
     background: var(--panel);
@@ -182,7 +182,7 @@
     overflow: hidden;
     position: relative;
   }
-
+ 
   .panel::before {
     content: '';
     position: absolute;
@@ -191,10 +191,10 @@
     background: linear-gradient(90deg, transparent, var(--accent), transparent);
     opacity: 0.6;
   }
-
+ 
   .panel.green::before { background: linear-gradient(90deg, transparent, var(--accent2), transparent); }
   .panel.orange::before { background: linear-gradient(90deg, transparent, var(--warn), transparent); }
-
+ 
   .panel-header {
     display: flex;
     align-items: center;
@@ -203,7 +203,7 @@
     border-bottom: 1px solid rgba(26,58,92,0.6);
     background: rgba(0,0,0,0.3);
   }
-
+ 
   .panel-title {
     font-family: 'Orbitron', monospace;
     font-size: 0.7rem;
@@ -211,19 +211,19 @@
     letter-spacing: 0.15em;
     color: var(--accent);
   }
-
+ 
   .panel.green .panel-title  { color: var(--accent2); }
   .panel.orange .panel-title { color: var(--warn); }
-
+ 
   .panel-tag {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.6rem;
     color: var(--text-dim);
     letter-spacing: 0.1em;
   }
-
+ 
   .panel-body { padding: 14px; }
-
+ 
   /* ---- SENSOR ROW ---- */
   .sensor-row {
     display: flex;
@@ -231,7 +231,7 @@
     margin-bottom: 10px;
     gap: 10px;
   }
-
+ 
   .sensor-label {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.7rem;
@@ -239,7 +239,7 @@
     width: 28px;
     flex-shrink: 0;
   }
-
+ 
   .sensor-bar-wrap {
     flex: 1;
     height: 6px;
@@ -248,17 +248,17 @@
     overflow: hidden;
     border: 1px solid rgba(255,255,255,0.05);
   }
-
+ 
   .sensor-bar {
     height: 100%;
     border-radius: 3px;
     transition: width 0.15s ease;
   }
-
+ 
   .bar-accel { background: linear-gradient(90deg, #0050a0, var(--accent)); }
   .bar-gyro  { background: linear-gradient(90deg, #500080, #cc44ff); }
   .bar-mag   { background: linear-gradient(90deg, #805000, var(--warn)); }
-
+ 
   .sensor-val {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.75rem;
@@ -267,7 +267,7 @@
     text-align: right;
     flex-shrink: 0;
   }
-
+ 
   .sensor-unit {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.6rem;
@@ -275,7 +275,7 @@
     width: 30px;
     flex-shrink: 0;
   }
-
+ 
   /* ---- BIG VALUES ---- */
   .big-grid {
     display: grid;
@@ -283,7 +283,7 @@
     gap: 10px;
     margin-top: 4px;
   }
-
+ 
   .big-val-card {
     background: rgba(0,0,0,0.3);
     border: 1px solid rgba(26,58,92,0.5);
@@ -291,7 +291,7 @@
     padding: 10px 12px;
     position: relative;
   }
-
+ 
   .big-val-label {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.58rem;
@@ -299,7 +299,7 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
-
+ 
   .big-val-num {
     font-family: 'Orbitron', monospace;
     font-size: 1.5rem;
@@ -308,17 +308,17 @@
     line-height: 1.1;
     margin-top: 3px;
   }
-
+ 
   .big-val-unit {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.6rem;
     color: var(--text-dim);
     margin-top: 1px;
   }
-
+ 
   .big-val-card.green .big-val-num  { color: var(--accent2); text-shadow: var(--glow2); }
   .big-val-card.orange .big-val-num { color: var(--warn); }
-
+ 
   /* ---- COMPASS ---- */
   .compass-wrap {
     display: flex;
@@ -326,7 +326,7 @@
     align-items: center;
     gap: 10px;
   }
-
+ 
   .compass-outer {
     width: 160px; height: 160px;
     border-radius: 50%;
@@ -338,7 +338,7 @@
     justify-content: center;
     box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.5);
   }
-
+ 
   .compass-outer::before {
     content: '';
     position: absolute;
@@ -346,13 +346,13 @@
     border-radius: 50%;
     border: 1px solid rgba(0,200,255,0.15);
   }
-
+ 
   .compass-marks {
     position: absolute;
     inset: 0;
     border-radius: 50%;
   }
-
+ 
   .compass-label {
     position: absolute;
     font-family: 'Orbitron', monospace;
@@ -360,12 +360,12 @@
     font-weight: 700;
     color: var(--accent);
   }
-
+ 
   .label-n { top: 8px;  left: 50%; transform: translateX(-50%); color: var(--danger); }
   .label-s { bottom: 8px; left: 50%; transform: translateX(-50%); }
   .label-e { right: 10px; top: 50%; transform: translateY(-50%); }
   .label-w { left: 10px; top: 50%; transform: translateY(-50%); }
-
+ 
   .compass-needle {
     position: absolute;
     width: 4px;
@@ -375,13 +375,13 @@
     left: calc(50% - 2px);
     transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
-
+ 
   .needle-north {
     background: linear-gradient(180deg, var(--danger), rgba(255,50,80,0.3));
     clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
     border-radius: 2px 2px 0 0;
   }
-
+ 
   .compass-needle.south {
     background: linear-gradient(0deg, var(--text-dim), rgba(100,150,180,0.3));
     clip-path: polygon(50% 100%, 100% 0%, 0% 0%);
@@ -391,7 +391,7 @@
     transform-origin: top center;
     height: 45px;
   }
-
+ 
   .compass-center {
     width: 10px; height: 10px;
     border-radius: 50%;
@@ -400,7 +400,7 @@
     z-index: 10;
     position: relative;
   }
-
+ 
   .heading-display {
     font-family: 'Orbitron', monospace;
     font-size: 1.6rem;
@@ -409,14 +409,14 @@
     text-shadow: 0 0 15px rgba(255,153,0,0.5);
     letter-spacing: 0.05em;
   }
-
+ 
   .heading-dir {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.8rem;
     color: var(--text-dim);
     letter-spacing: 0.2em;
   }
-
+ 
   /* ---- ATTITUDE INDICATOR ---- */
   .attitude-wrap {
     display: flex;
@@ -424,7 +424,7 @@
     align-items: center;
     gap: 10px;
   }
-
+ 
   .attitude-outer {
     width: 160px; height: 160px;
     border-radius: 50%;
@@ -434,7 +434,7 @@
     background: #0a0a14;
     box-shadow: 0 0 20px rgba(0,0,0,0.8);
   }
-
+ 
   .attitude-horizon {
     position: absolute;
     width: 300px;
@@ -442,19 +442,19 @@
     left: -70px;
     transition: transform 0.15s ease;
   }
-
+ 
   .horizon-sky {
     width: 100%;
     height: 50%;
     background: linear-gradient(180deg, #003060, #0060a0);
   }
-
+ 
   .horizon-ground {
     width: 100%;
     height: 50%;
     background: linear-gradient(0deg, #3d1a00, #7a3a00);
   }
-
+ 
   .horizon-line {
     position: absolute;
     width: 100%;
@@ -463,28 +463,28 @@
     top: 50%;
     margin-top: -1px;
   }
-
+ 
   .attitude-cross {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
   }
-
+ 
   .attitude-cross-h {
     width: 60px; height: 2px;
     background: var(--warn);
     position: absolute;
     top: 0; left: -30px;
   }
-
+ 
   .attitude-cross-v {
     width: 2px; height: 14px;
     background: var(--warn);
     position: absolute;
     top: -7px; left: -1px;
   }
-
+ 
   .attitude-dot {
     width: 6px; height: 6px;
     border-radius: 50%;
@@ -492,14 +492,14 @@
     position: absolute;
     top: -3px; left: -3px;
   }
-
+ 
   .attitude-angles {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     width: 100%;
   }
-
+ 
   .angle-card {
     background: rgba(0,0,0,0.3);
     border: 1px solid rgba(26,58,92,0.5);
@@ -507,20 +507,20 @@
     padding: 8px 10px;
     text-align: center;
   }
-
+ 
   .angle-name {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.58rem;
     color: var(--text-dim);
   }
-
+ 
   .angle-num {
     font-family: 'Orbitron', monospace;
     font-size: 1.3rem;
     font-weight: 700;
     color: var(--accent2);
   }
-
+ 
   /* ---- BARO ---- */
   .baro-visual {
     display: flex;
@@ -528,14 +528,14 @@
     gap: 8px;
     margin-bottom: 12px;
   }
-
+ 
   .alt-bar-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
   }
-
+ 
   .alt-bar-outer {
     width: 20px;
     height: 100px;
@@ -547,29 +547,29 @@
     flex-direction: column;
     justify-content: flex-end;
   }
-
+ 
   .alt-bar-fill {
     width: 100%;
     background: linear-gradient(0deg, var(--accent2), var(--accent));
     transition: height 0.5s ease;
     box-shadow: 0 0 8px rgba(0,200,255,0.4);
   }
-
+ 
   .alt-label {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.6rem;
     color: var(--text-dim);
   }
-
+ 
   /* ---- GPS MAP ---- */
   .gps-panel { grid-column: 1 / -1; }
-
+ 
   .gps-body {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 14px;
   }
-
+ 
   .map-container {
     background: #0a1520;
     border: 1px solid var(--border);
@@ -578,9 +578,9 @@
     position: relative;
     overflow: hidden;
   }
-
+ 
   #map { width: 100%; height: 100%; }
-
+ 
   .map-overlay {
     position: absolute;
     top: 8px; left: 8px;
@@ -593,7 +593,7 @@
     color: var(--accent);
     z-index: 100;
   }
-
+ 
   .map-no-fix {
     position: absolute;
     inset: 0;
@@ -604,48 +604,48 @@
     background: rgba(0,0,0,0.85);
     z-index: 50;
   }
-
+ 
   .no-fix-icon {
     font-size: 2rem;
     margin-bottom: 8px;
     filter: drop-shadow(0 0 8px rgba(255,153,0,0.5));
   }
-
+ 
   .no-fix-text {
     font-family: 'Orbitron', monospace;
     font-size: 0.7rem;
     color: var(--warn);
     letter-spacing: 0.15em;
   }
-
+ 
   .no-fix-sub {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.6rem;
     color: var(--text-dim);
     margin-top: 4px;
   }
-
+ 
   .gps-stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     align-content: start;
   }
-
+ 
   .gps-stat-card {
     background: rgba(0,0,0,0.3);
     border: 1px solid rgba(26,58,92,0.5);
     border-radius: 3px;
     padding: 10px;
   }
-
+ 
   .gps-stat-label {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.58rem;
     color: var(--text-dim);
     letter-spacing: 0.1em;
   }
-
+ 
   .gps-stat-val {
     font-family: 'Orbitron', monospace;
     font-size: 1.1rem;
@@ -653,7 +653,7 @@
     color: var(--accent2);
     margin-top: 2px;
   }
-
+ 
   .coord-display {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.85rem;
@@ -661,41 +661,41 @@
     margin-top: 2px;
     letter-spacing: 0.05em;
   }
-
+ 
   .sat-dots {
     display: flex;
     gap: 3px;
     flex-wrap: wrap;
     margin-top: 4px;
   }
-
+ 
   .sat-dot {
     width: 8px; height: 8px;
     border-radius: 1px;
     background: var(--border);
   }
-
+ 
   .sat-dot.active {
     background: var(--accent2);
     box-shadow: 0 0 4px var(--accent2);
   }
-
+ 
   /* ---- BOTTOM ROW ---- */
   .charts-panel { grid-column: span 2; }
-
+ 
   .mini-charts {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
   }
-
+ 
   .mini-chart-wrap {
     background: rgba(0,0,0,0.3);
     border: 1px solid rgba(26,58,92,0.5);
     border-radius: 3px;
     padding: 8px;
   }
-
+ 
   .mini-chart-title {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.6rem;
@@ -703,13 +703,13 @@
     letter-spacing: 0.08em;
     margin-bottom: 4px;
   }
-
+ 
   canvas.mini-chart {
     width: 100%;
     height: 60px;
     display: block;
   }
-
+ 
   /* ---- BOTTOM STATUS ---- */
   .bottom-bar {
     padding: 8px 20px;
@@ -722,26 +722,26 @@
     font-size: 0.65rem;
     color: var(--text-dim);
   }
-
+ 
   .tick-counter { color: var(--accent); }
-
+ 
   /* ---- SCROLLBAR ---- */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
+ 
   /* ---- RESPONSIVE ---- */
   @media (max-width: 1100px) {
     .main { grid-template-columns: 1fr 1fr; }
     .gps-panel { grid-column: 1 / -1; }
     .charts-panel { grid-column: 1 / -1; }
   }
-
+ 
   @media (max-width: 700px) {
     .main { grid-template-columns: 1fr; }
     .gps-body { grid-template-columns: 1fr; }
   }
-
+ 
   /* scan-line overlay */
   body::after {
     content: '';
@@ -760,7 +760,7 @@
 </style>
 </head>
 <body>
-
+ 
 <!-- HEADER -->
 <header class="header">
   <div class="logo">
@@ -782,7 +782,7 @@
       <div class="logo-sub">ESP32·GY-91·NEO-6M&nbsp;&nbsp;v1.0</div>
     </div>
   </div>
-
+ 
   <div class="status-bar">
     <div class="status-item">
       <span class="status-label">SENSOR</span>
@@ -811,10 +811,10 @@
     </div>
   </div>
 </header>
-
+ 
 <!-- MAIN -->
 <div class="main">
-
+ 
   <!-- ====== ACELERÔMETRO ====== -->
   <div class="panel">
     <div class="panel-header">
@@ -840,7 +840,7 @@
         <span class="sensor-val" id="val-az">1.000</span>
         <span class="sensor-unit">g</span>
       </div>
-
+ 
       <div class="big-grid" style="margin-top:10px">
         <div class="big-val-card green">
           <div class="big-val-label">PITCH</div>
@@ -855,7 +855,7 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- ====== GIROSCÓPIO ====== -->
   <div class="panel">
     <div class="panel-header">
@@ -881,7 +881,7 @@
         <span class="sensor-val" id="val-gz">0.0</span>
         <span class="sensor-unit">°/s</span>
       </div>
-
+ 
       <div class="attitude-wrap" style="margin-top:14px">
         <div class="attitude-outer">
           <div class="attitude-horizon" id="horizon">
@@ -908,7 +908,7 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- ====== MAGNETÓMETRO + BÚSSOLA ====== -->
   <div class="panel orange">
     <div class="panel-header">
@@ -934,7 +934,7 @@
         <span class="sensor-val" id="val-mz">0.0</span>
         <span class="sensor-unit">µT</span>
       </div>
-
+ 
       <div class="compass-wrap" style="margin-top:10px">
         <div class="compass-outer">
           <span class="compass-label label-n">N</span>
@@ -951,7 +951,7 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- ====== BARÔMETRO ====== -->
   <div class="panel green">
     <div class="panel-header">
@@ -986,7 +986,7 @@
           </div>
         </div>
       </div>
-
+ 
       <!-- Mini chart altitude -->
       <div style="margin-top:10px">
         <div class="mini-chart-title">HISTÓRICO ALTITUDE (últimos 60s)</div>
@@ -994,7 +994,7 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- ====== GRÁFICOS MINI ====== -->
   <div class="panel charts-panel" style="grid-column: span 2">
     <div class="panel-header">
@@ -1018,7 +1018,7 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- ====== GPS ====== -->
   <div class="panel gps-panel">
     <div class="panel-header">
@@ -1036,7 +1036,7 @@
             <div class="no-fix-sub" id="sat-count-text">Satélites: 0</div>
           </div>
         </div>
-
+ 
         <div class="gps-stats">
           <div class="gps-stat-card" style="grid-column:1/-1">
             <div class="gps-stat-label">LATITUDE</div>
@@ -1067,19 +1067,27 @@
       </div>
     </div>
   </div>
-
+ 
 </div><!-- /main -->
-
+ 
 <div class="bottom-bar">
   <span>DRONE CONTROL SYSTEM &nbsp;·&nbsp; ESP32 XIAO S3 &nbsp;·&nbsp; GY-91 + NEO-6M</span>
   <span>FREQ: <span id="freq-display">--</span> Hz &nbsp;|&nbsp; UPTIME: <span id="uptime">00:00:00</span> &nbsp;|&nbsp; TICKS: <span class="tick-counter" id="tick-count">0</span></span>
 </div>
-
+<div id="debug-bar" style="background:#0a1020;border-top:1px solid #1a3a5c;padding:6px 20px;font-family:monospace;font-size:11px;color:#4a9060;display:flex;gap:20px;flex-wrap:wrap;">
+  <span>MQTT: <span id="dbg-state" style="color:#ff9900">OFFLINE</span></span>
+  <span>MSGS: <span id="dbg-msgs" style="color:#00c8ff">0</span></span>
+  <span>LAST: <span id="dbg-last" style="color:#00c8ff">—</span></span>
+  <span>TOPIC: <span id="dbg-topic" style="color:#00c8ff">—</span></span>
+  <span>PARSE: <span id="dbg-parse" style="color:#00ff9d">OK</span></span>
+  <span id="dbg-err" style="color:#ff3355"></span>
+</div>
+ 
 <!-- Leaflet for GPS map -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/5.10.1/mqtt.min.js"></script>
-
+ 
 <script>
 // ========================================
 // ESTADO GLOBAL
@@ -1090,7 +1098,7 @@ let tickCount = 0;
 let lastTickTime = Date.now();
 let fetchHz = 0;
 let startTime = Date.now();
-
+ 
 // Histórico para gráficos
 const MAX_HIST = 60;
 const hist = {
@@ -1098,7 +1106,7 @@ const hist = {
   gx:[], gy:[], gz:[],
   pitch:[], roll:[], alt:[]
 };
-
+ 
 // ========================================
 // MAP
 // ========================================
@@ -1107,7 +1115,7 @@ let mapMarker = null;
 let mapTrack = [];
 let mapPolyline = null;
 let mapInitialized = false;
-
+ 
 function initMap() {
   if (mapInitialized) return;
   mapInitialized = true;
@@ -1116,7 +1124,7 @@ function initMap() {
     maxZoom: 19
   }).addTo(map);
   map.setView([0, 0], 2);
-
+ 
   const icon = L.divIcon({
     html: `<div style="
       width:18px;height:18px;
@@ -1132,7 +1140,7 @@ function initMap() {
   mapMarker = L.marker([0, 0], { icon }).addTo(map);
   mapPolyline = L.polyline([], { color: '#00c8ff', weight: 2, opacity: 0.7 }).addTo(map);
 }
-
+ 
 function updateMap(lat, lng) {
   if (!mapInitialized) initMap();
   mapMarker.setLatLng([lat, lng]);
@@ -1143,7 +1151,7 @@ function updateMap(lat, lng) {
   document.getElementById('map-zoom-info').textContent =
     `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 }
-
+ 
 // ========================================
 // MINI CHARTS (canvas)
 // ========================================
@@ -1155,9 +1163,9 @@ function drawLineChart(canvasId, datasets, colors, minVal, maxVal) {
   const h = canvas.offsetHeight || 60;
   canvas.width = w;
   canvas.height = h;
-
+ 
   ctx.clearRect(0, 0, w, h);
-
+ 
   // Grid
   ctx.strokeStyle = 'rgba(26,58,92,0.4)';
   ctx.lineWidth = 1;
@@ -1168,7 +1176,7 @@ function drawLineChart(canvasId, datasets, colors, minVal, maxVal) {
     ctx.lineTo(w, y);
     ctx.stroke();
   }
-
+ 
   // Zero line
   const range = maxVal - minVal;
   const zeroY = h - ((0 - minVal) / range) * h;
@@ -1177,7 +1185,7 @@ function drawLineChart(canvasId, datasets, colors, minVal, maxVal) {
   ctx.moveTo(0, zeroY);
   ctx.lineTo(w, zeroY);
   ctx.stroke();
-
+ 
   datasets.forEach((data, di) => {
     if (data.length < 2) return;
     ctx.strokeStyle = colors[di];
@@ -1192,7 +1200,7 @@ function drawLineChart(canvasId, datasets, colors, minVal, maxVal) {
     ctx.stroke();
   });
 }
-
+ 
 function redrawCharts() {
   drawLineChart('chart-accel', [hist.ax, hist.ay, hist.az],
     ['#00c8ff', '#00ff9d', '#ff9900'], -2, 2);
@@ -1207,12 +1215,12 @@ function redrawCharts() {
     drawLineChart('alt-chart', [hist.alt], ['#00ff9d'], 0, maxA);
   }
 }
-
+ 
 function pushHist(key, val) {
   hist[key].push(val);
   if (hist[key].length > MAX_HIST) hist[key].shift();
 }
-
+ 
 // ========================================
 // BAR HELPERS
 // ========================================
@@ -1221,7 +1229,7 @@ function setBar(id, val, min, max) {
   const el = document.getElementById(id);
   if (el) el.style.width = pct + '%';
 }
-
+ 
 // ========================================
 // COMPASS
 // ========================================
@@ -1231,13 +1239,13 @@ function setCompass(heading) {
   const south = needle ? needle.nextElementSibling : null;
   document.getElementById('compass-heading').textContent =
     String(Math.round(heading)).padStart(3,'0') + '°';
-
+ 
   const dirs = ['NORTE','NNE','NE','ENE','ESTE','ESE','SE','SSE',
                  'SUL','SSW','SW','WSW','OESTE','WNW','NW','NNW'];
   const idx = Math.round(heading / 22.5) % 16;
   document.getElementById('compass-dir').textContent = dirs[idx];
 }
-
+ 
 // ========================================
 // ATTITUDE INDICATOR
 // ========================================
@@ -1250,7 +1258,7 @@ function setAttitude(pitch, roll) {
   document.getElementById('att-pitch').textContent = pitch.toFixed(1) + '°';
   document.getElementById('att-roll').textContent = roll.toFixed(1) + '°';
 }
-
+ 
 // ========================================
 // SAT DOTS
 // ========================================
@@ -1264,7 +1272,7 @@ function updateSatDots(count) {
     wrap.appendChild(d);
   }
 }
-
+ 
 // ========================================
 // UPDATE UI
 // ========================================
@@ -1278,7 +1286,7 @@ function updateUI(d) {
   setBar('bar-az', d.accel.z, -2, 2);
   setText('val-pitch', d.accel.pitch.toFixed(1));
   setText('val-roll',  d.accel.roll.toFixed(1));
-
+ 
   // GYRO
   setText('val-gx', d.gyro.x.toFixed(1));
   setText('val-gy', d.gyro.y.toFixed(1));
@@ -1286,10 +1294,10 @@ function updateUI(d) {
   setBar('bar-gx', d.gyro.x, -250, 250);
   setBar('bar-gy', d.gyro.y, -250, 250);
   setBar('bar-gz', d.gyro.z, -250, 250);
-
+ 
   // ATTITUDE
   setAttitude(d.accel.pitch, d.accel.roll);
-
+ 
   // MAG
   setText('val-mx', d.mag.x.toFixed(1));
   setText('val-my', d.mag.y.toFixed(1));
@@ -1298,18 +1306,18 @@ function updateUI(d) {
   setBar('bar-my', d.mag.y, -100, 100);
   setBar('bar-mz', d.mag.z, -100, 100);
   setCompass(d.mag.heading);
-
+ 
   // BARO
   setText('val-alt',   d.baro.altitude.toFixed(2));
   setText('val-press', (d.baro.pressure / 100).toFixed(1)); // Pa to hPa
   setText('val-temp',  d.baro.temperature.toFixed(1));
   setText('hdr-alt',   d.baro.altitude.toFixed(1) + 'm');
-
+ 
   // Alt bar (max 50m)
   const altPct = Math.min(100, Math.max(0, (d.baro.altitude / 50) * 100));
   const altBar = document.getElementById('alt-bar-fill');
   if (altBar) altBar.style.height = altPct + '%';
-
+ 
   // GPS
   if (d.gps.valid) {
     setText('gps-lat', d.gps.lat.toFixed(7) + '°');
@@ -1329,7 +1337,7 @@ function updateUI(d) {
   setText('gps-sats',   d.gps.satellites);
   setText('sat-count-text', 'Satélites: ' + d.gps.satellites);
   updateSatDots(d.gps.satellites);
-
+ 
   // History
   pushHist('ax', d.accel.x);
   pushHist('ay', d.accel.y);
@@ -1340,15 +1348,15 @@ function updateUI(d) {
   pushHist('pitch', d.accel.pitch);
   pushHist('roll', d.accel.roll);
   pushHist('alt', d.baro.altitude);
-
+ 
   redrawCharts();
 }
-
+ 
 function setText(id, val) {
   const el = document.getElementById(id);
   if (el) el.textContent = val;
 }
-
+ 
 // ========================================
 // DEMO / SIMULATION
 // ========================================
@@ -1388,32 +1396,32 @@ function genDemoData() {
     timestamp: Date.now()
   };
 }
-
+ 
 // ========================================
 // MQTT CONNECTION
 // ========================================
 let demoInterval = null;
-
+ 
 function mqttConnect() {
   const broker = document.getElementById('mqtt-broker').value.trim();
   const user   = document.getElementById('mqtt-user').value.trim();
   const pass   = document.getElementById('mqtt-pass').value.trim();
   const dot    = document.getElementById('conn-dot');
-
+ 
   // Destruir cliente anterior completamente
   if (mqttClient) {
     mqttClient.removeAllListeners();
     try { mqttClient.end(true); } catch(e) {}
     mqttClient = null;
   }
-
+ 
   // Parar demo imediatamente
   if (demoInterval) { clearInterval(demoInterval); demoInterval = null; }
   connected = false;
   dot.classList.add('disconnected');
-
+ 
   const url = `wss://${broker}:8884/mqtt`;
-
+ 
   mqttClient = mqtt.connect(url, {
     username: user,
     password: pass,
@@ -1422,19 +1430,29 @@ function mqttConnect() {
     reconnectPeriod: 0,      // sem reconexão automática — evita duplicação de listeners
     connectTimeout: 12000
   });
-
+ 
   mqttClient.once('connect', () => {
     connected = true;
     dot.classList.remove('disconnected');
     mqttClient.subscribe('drone/telemetry', { qos: 0 });
     mqttClient.subscribe('drone/status',    { qos: 0 });
     mqttClient.subscribe('drone/response',  { qos: 0 });
+    setText('dbg-state', 'LIGADO');
+    document.getElementById('dbg-state').style.color = '#00ff9d';
     console.log('MQTT ligado!');
   });
-
+ 
   mqttClient.on('message', (topic, payload) => {
+    const raw = payload.toString();
+    const msgNum = (parseInt(document.getElementById('dbg-msgs').textContent)||0) + 1;
+    setText('dbg-msgs', msgNum);
+    setText('dbg-topic', topic);
+    setText('dbg-last', new Date().toLocaleTimeString());
+    console.log('MSG recebida:', topic, raw.slice(0,80));
     try {
-      const d = JSON.parse(payload.toString());
+      const d = JSON.parse(raw);
+      setText('dbg-parse', 'OK');
+      document.getElementById('dbg-parse').style.color = '#00ff9d';
       if (topic === 'drone/telemetry') {
         updateUI(d);
         tickCount++;
@@ -1448,26 +1466,37 @@ function mqttConnect() {
           alert('Altitude calibrada! Pressão base: ' + (d.base_pressure/100).toFixed(2) + ' hPa');
         }
       }
-    } catch(e) { console.warn('Erro MQTT parse:', e); }
+    } catch(e) {
+      setText('dbg-parse', 'ERRO: ' + e.message);
+      document.getElementById('dbg-parse').style.color = '#ff3355';
+      console.warn('Erro MQTT parse:', e, raw);
+    }
   });
-
+ 
   mqttClient.on('error', (err) => {
+    setText('dbg-state', 'ERRO');
+    document.getElementById('dbg-state').style.color = '#ff3355';
+    setText('dbg-err', err.message);
     console.error('MQTT erro:', err.message);
     connected = false;
     dot.classList.add('disconnected');
   });
-
+ 
   mqttClient.on('close', () => {
+    setText('dbg-state', 'FECHADO');
+    document.getElementById('dbg-state').style.color = '#ff9900';
     connected = false;
     dot.classList.add('disconnected');
   });
-
+ 
   mqttClient.on('offline', () => {
+    setText('dbg-state', 'OFFLINE');
+    document.getElementById('dbg-state').style.color = '#ff9900';
     connected = false;
     dot.classList.add('disconnected');
   });
 }
-
+ 
 function calibrateAlt() {
   if (!mqttClient || !mqttClient.connected) {
     alert('MQTT não conectado. Ligue primeiro ao HiveMQ.');
@@ -1476,7 +1505,7 @@ function calibrateAlt() {
   const cmd = JSON.stringify({ command: 'calibrate_alt' });
   mqttClient.publish('drone/command', cmd, { qos: 1 });
 }
-
+ 
 // Demo automático até conectar
 function startDemo() {
   demoInterval = setInterval(() => {
@@ -1488,7 +1517,7 @@ function startDemo() {
     setText('freq-display', 20);
   }, 50);
 }
-
+ 
 // Uptime
 setInterval(() => {
   const s = Math.floor((Date.now() - startTime) / 1000);
@@ -1501,7 +1530,7 @@ setInterval(() => {
     String(sec).padStart(2,'0')
   );
 }, 1000);
-
+ 
 // ========================================
 // INIT
 // ========================================
