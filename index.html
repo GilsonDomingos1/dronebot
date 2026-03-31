@@ -1400,33 +1400,36 @@ function mqttConnect() {
   const pass   = document.getElementById('mqtt-pass').value.trim();
   const dot    = document.getElementById('conn-dot');
 
+  // Destruir cliente anterior completamente
   if (mqttClient) {
+    mqttClient.removeAllListeners();
     try { mqttClient.end(true); } catch(e) {}
     mqttClient = null;
   }
 
-  // Stop demo when trying to connect
+  // Parar demo imediatamente
   if (demoInterval) { clearInterval(demoInterval); demoInterval = null; }
-
+  connected = false;
   dot.classList.add('disconnected');
+
   const url = `wss://${broker}:8884/mqtt`;
 
   mqttClient = mqtt.connect(url, {
     username: user,
     password: pass,
-    clientId: 'dashboard_' + Math.random().toString(16).slice(2, 8),
+    clientId: 'dash_' + Math.random().toString(16).slice(2, 10),
     clean: true,
-    reconnectPeriod: 5000,
-    connectTimeout: 10000
+    reconnectPeriod: 0,      // sem reconexão automática — evita duplicação de listeners
+    connectTimeout: 12000
   });
 
-  mqttClient.on('connect', () => {
+  mqttClient.once('connect', () => {
     connected = true;
     dot.classList.remove('disconnected');
     mqttClient.subscribe('drone/telemetry', { qos: 0 });
     mqttClient.subscribe('drone/status',    { qos: 0 });
     mqttClient.subscribe('drone/response',  { qos: 0 });
-    console.log('MQTT conectado ao HiveMQ!');
+    console.log('MQTT ligado!');
   });
 
   mqttClient.on('message', (topic, payload) => {
@@ -1445,7 +1448,7 @@ function mqttConnect() {
           alert('Altitude calibrada! Pressão base: ' + (d.base_pressure/100).toFixed(2) + ' hPa');
         }
       }
-    } catch(e) { console.warn('Erro ao parsear MQTT:', e); }
+    } catch(e) { console.warn('Erro MQTT parse:', e); }
   });
 
   mqttClient.on('error', (err) => {
@@ -1455,6 +1458,11 @@ function mqttConnect() {
   });
 
   mqttClient.on('close', () => {
+    connected = false;
+    dot.classList.add('disconnected');
+  });
+
+  mqttClient.on('offline', () => {
     connected = false;
     dot.classList.add('disconnected');
   });
